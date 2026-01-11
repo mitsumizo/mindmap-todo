@@ -32,18 +32,7 @@ body {
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-.react-flow__node:hover {
-  animation: float 2s ease-in-out infinite;
-}
+/* floatアニメーションは削除（ノード側のホバーエフェクトと競合するため） */
 
 /* スクロールバーのスタイリング */
 ::-webkit-scrollbar {
