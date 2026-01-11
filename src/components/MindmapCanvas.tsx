@@ -30,8 +30,30 @@ export function MindmapCanvas() {
       flowNodes,
       flowEdges
     );
+
+    // エッジのスタイルを動的に設定（完了ノードからのエッジの色を変える）
+    const styledEdges = layoutedEdges.map((edge) => {
+      const sourceNode = tree.nodes[edge.source];
+      const targetNode = tree.nodes[edge.target];
+      const isCompleted = sourceNode?.completed || targetNode?.completed;
+
+      return {
+        ...edge,
+        animated: !isCompleted, // 未完了のエッジはアニメーション
+        style: {
+          stroke: isCompleted
+            ? '#10b981' // emerald-500（完了）
+            : '#a855f7', // purple-500（未完了）
+          strokeWidth: 3,
+          filter: isCompleted
+            ? 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.4))'
+            : 'drop-shadow(0 0 8px rgba(168, 85, 247, 0.4))',
+        },
+      };
+    });
+
     setNodes(layoutedNodes);
-    setEdges(layoutedEdges);
+    setEdges(styledEdges);
   }, [tree]);
 
   return (
@@ -41,21 +63,30 @@ export function MindmapCanvas() {
         edges={edges}
         nodeTypes={nodeTypes}
         fitView
-        minZoom={0.5}
-        maxZoom={1.5}
+        minZoom={0.3}
+        maxZoom={2}
         defaultEdgeOptions={{
           type: 'smoothstep',
-          animated: false,
-          style: { stroke: '#9333ea', strokeWidth: 2 },
+          animated: true,
         }}
       >
-        <Background color="#e9d5ff" gap={16} />
-        <Controls />
+        <Background
+          color="#c084fc"
+          gap={20}
+          size={2}
+          className="bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100"
+        />
+        <Controls
+          className="!bg-white !border-2 !border-purple-400 !shadow-2xl !rounded-xl"
+        />
         <MiniMap
           nodeColor={(node) => {
-            return node.data.completed ? '#86efac' : '#e9d5ff';
+            return node.data.completed
+              ? '#10b981' // emerald-500
+              : '#a855f7'; // purple-500
           }}
-          className="!bg-white !border-2 !border-purple-300"
+          className="!bg-gradient-to-br !from-white !to-purple-50 !border-4 !border-purple-400 !shadow-2xl !rounded-xl"
+          maskColor="rgba(168, 85, 247, 0.1)"
         />
       </ReactFlow>
     </div>
