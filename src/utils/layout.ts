@@ -1,8 +1,8 @@
 import dagre from '@dagrejs/dagre';
 import { Node, Edge } from '@xyflow/react';
 
-const nodeWidth = 220;
-const nodeHeight = 60;
+const nodeWidth = 240;
+const nodeHeight = 80;
 
 export function getLayoutedElements(
   nodes: Node[],
@@ -14,8 +14,10 @@ export function getLayoutedElements(
   g.setDefaultEdgeLabel(() => ({}));
   g.setGraph({
     rankdir: direction,
-    ranksep: 80,
-    nodesep: 40,
+    ranksep: 120, // ランク間の距離を広げる（80 → 120）
+    nodesep: 80,  // ノード間の距離を広げる（40 → 80）
+    marginx: 20,  // 左右のマージン
+    marginy: 20,  // 上下のマージン
   });
 
   nodes.forEach((node) => {

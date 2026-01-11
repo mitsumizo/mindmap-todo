@@ -6,6 +6,7 @@ import { TodoNodeData } from '../../utils/treeToFlow';
 function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
   const toggleComplete = useTodoStore((state) => state.toggleComplete);
   const toggleCollapse = useTodoStore((state) => state.toggleCollapse);
+  const addNode = useTodoStore((state) => state.addNode);
 
   const handleCheckboxChange = useCallback(() => {
     toggleComplete(id);
@@ -14,6 +15,13 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
   const handleCollapseToggle = useCallback(() => {
     toggleCollapse(id);
   }, [id, toggleCollapse]);
+
+  const handleAddChild = useCallback(() => {
+    const newLabel = prompt('新しいタスク名を入力してください 🎯');
+    if (newLabel && newLabel.trim()) {
+      addNode(id, newLabel.trim());
+    }
+  }, [id, addNode]);
 
   return (
     <div
@@ -85,6 +93,22 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
             {data.collapsed ? '▶' : '▼'}
           </button>
         )}
+
+        {/* ノード追加ボタン */}
+        <button
+          onClick={handleAddChild}
+          className="
+            px-3 py-1.5 text-xs font-bold rounded-full
+            bg-gradient-to-r from-emerald-500 to-teal-500
+            text-white shadow-lg shadow-emerald-300/50
+            transition-all duration-300 ease-out
+            hover:scale-110 hover:shadow-xl active:scale-95
+            hover:from-emerald-600 hover:to-teal-600
+          "
+          title="子タスクを追加"
+        >
+          + 追加
+        </button>
       </div>
 
       {/* 完了バッジ */}
