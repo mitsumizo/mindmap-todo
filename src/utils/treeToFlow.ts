@@ -1,7 +1,7 @@
 import { Node, Edge } from '@xyflow/react';
 import { TodoTree } from '../data/initialTree';
 
-export interface TodoNodeData {
+export interface TodoNodeData extends Record<string, unknown> {
   label: string;
   completed: boolean;
   collapsed: boolean;

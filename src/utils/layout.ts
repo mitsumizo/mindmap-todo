@@ -4,11 +4,11 @@ import { Node, Edge } from '@xyflow/react';
 const nodeWidth = 240;
 const nodeHeight = 120; // 編集・削除ボタン追加により高さを増加
 
-export function getLayoutedElements(
-  nodes: Node[],
+export function getLayoutedElements<T extends Record<string, unknown> = Record<string, unknown>>(
+  nodes: Node<T>[],
   edges: Edge[],
   direction: 'TB' | 'LR' = 'TB'
-) {
+): { nodes: Node<T>[]; edges: Edge[] } {
   const g = new dagre.graphlib.Graph();
 
   // ツリーの構造を分析して最適な間隔を計算

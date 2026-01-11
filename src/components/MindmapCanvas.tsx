@@ -10,23 +10,23 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useTodoStore } from '../store/todoStore';
-import { convertTreeToFlow } from '../utils/treeToFlow';
+import { convertTreeToFlow, TodoNodeData } from '../utils/treeToFlow';
 import { getLayoutedElements } from '../utils/layout';
 import { TodoNode } from './nodes/TodoNode';
 
-const nodeTypes: NodeTypes = {
+const nodeTypes = {
   todoNode: TodoNode,
-};
+} as NodeTypes;
 
 export function MindmapCanvas() {
   const tree = useTodoStore((state) => state.tree);
-  const [nodes, setNodes] = useState<Node[]>([]);
+  const [nodes, setNodes] = useState<Node<TodoNodeData>[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
 
   // ツリー変更時にReact Flow要素を再計算
   useEffect(() => {
     const { nodes: flowNodes, edges: flowEdges } = convertTreeToFlow(tree);
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements<TodoNodeData>(
       flowNodes,
       flowEdges
     );

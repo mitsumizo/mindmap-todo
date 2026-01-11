@@ -1,9 +1,14 @@
 import { memo, useCallback } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
+import { Handle, Position } from '@xyflow/react';
 import { useTodoStore } from '../../store/todoStore';
-import { TodoNodeData } from '../../utils/treeToFlow';
+import type { TodoNodeData } from '../../utils/treeToFlow';
 
-function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
+interface TodoNodeProps {
+  id: string;
+  data: TodoNodeData;
+}
+
+function TodoNodeComponent({ id, data: nodeData }: TodoNodeProps) {
   const toggleComplete = useTodoStore((state) => state.toggleComplete);
   const toggleCollapse = useTodoStore((state) => state.toggleCollapse);
   const addNode = useTodoStore((state) => state.addNode);
@@ -29,22 +34,22 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
   }, [id, addNode]);
 
   const handleEdit = useCallback(() => {
-    const newLabel = prompt('タスク名を編集 ✏️', data.label);
-    if (newLabel && newLabel.trim() && newLabel.trim() !== data.label) {
+    const newLabel = prompt('タスク名を編集 ✏️', nodeData.label);
+    if (newLabel && newLabel.trim() && newLabel.trim() !== nodeData.label) {
       updateNode(id, newLabel.trim());
     }
-  }, [id, data.label, updateNode]);
+  }, [id, nodeData.label, updateNode]);
 
   const handleDelete = useCallback(() => {
     if (isRootNode) {
       alert('ルートノードは削除できません 🚫');
       return;
     }
-    const confirmed = confirm(`「${data.label}」を削除しますか？\n（子ノードも一緒に削除されます）`);
+    const confirmed = confirm(`「${nodeData.label}」を削除しますか？\n（子ノードも一緒に削除されます）`);
     if (confirmed) {
       deleteNode(id);
     }
-  }, [id, data.label, deleteNode, isRootNode]);
+  }, [id, nodeData.label, deleteNode, isRootNode]);
 
   return (
     <div
@@ -52,7 +57,7 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
         px-5 py-4 rounded-2xl shadow-xl border-2 min-w-[220px]
         transition-all duration-300 ease-out
         hover:scale-105 hover:shadow-2xl hover:-translate-y-1
-        ${data.completed
+        ${nodeData.completed
           ? 'bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 border-emerald-400 shadow-emerald-200/50'
           : 'bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 border-purple-400 shadow-purple-200/50'
         }
@@ -63,7 +68,7 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
         type="target"
         position={Position.Top}
         className={`w-3 h-3 !rounded-full ${
-          data.completed ? '!bg-emerald-500' : '!bg-purple-500'
+          nodeData.completed ? '!bg-emerald-500' : '!bg-purple-500'
         } !border-2 !border-white shadow-lg transition-all duration-300`}
       />
 
@@ -72,12 +77,12 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
         <div className="relative">
           <input
             type="checkbox"
-            checked={data.completed}
+            checked={nodeData.completed}
             onChange={handleCheckboxChange}
             className={`
               w-6 h-6 cursor-pointer rounded-md
               transition-all duration-300
-              ${data.completed
+              ${nodeData.completed
                 ? 'accent-emerald-500 scale-110'
                 : 'accent-purple-500 hover:scale-110'
               }
@@ -90,30 +95,30 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
           className={`
             flex-1 text-sm font-semibold tracking-wide
             transition-all duration-300
-            ${data.completed
+            ${nodeData.completed
               ? 'line-through text-gray-500 opacity-75'
               : 'text-gray-800'
             }
           `}
         >
-          {data.label}
+          {nodeData.label}
         </span>
 
         {/* 折りたたみボタン */}
-        {data.hasChildren && (
+        {nodeData.hasChildren && (
           <button
             onClick={handleCollapseToggle}
             className={`
               px-3 py-1.5 text-xs font-bold rounded-full
               transition-all duration-300 ease-out
               hover:scale-110 active:scale-95
-              ${data.collapsed
+              ${nodeData.collapsed
                 ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-300/50 hover:shadow-xl'
                 : 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg shadow-purple-300/50 hover:shadow-xl'
               }
             `}
           >
-            {data.collapsed ? '▶' : '▼'}
+            {nodeData.collapsed ? '▶' : '▼'}
           </button>
         )}
 
@@ -170,19 +175,19 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
       </div>
 
       {/* 完了バッジ */}
-      {data.completed && (
+      {nodeData.completed && (
         <div className="absolute -top-2 -right-2 bg-gradient-to-br from-emerald-400 to-teal-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-bounce">
           ✓
         </div>
       )}
 
       {/* 子ノードへの接続ハンドル */}
-      {data.hasChildren && (
+      {nodeData.hasChildren && (
         <Handle
           type="source"
           position={Position.Bottom}
           className={`w-3 h-3 !rounded-full ${
-            data.completed ? '!bg-emerald-500' : '!bg-purple-500'
+            nodeData.completed ? '!bg-emerald-500' : '!bg-purple-500'
           } !border-2 !border-white shadow-lg transition-all duration-300`}
         />
       )}
