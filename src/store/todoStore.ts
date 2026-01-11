@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
-import { TodoTree, TodoNode } from '../types/todo';
-import { initialTree } from '../data/initialTree';
+import { TodoTree, TodoNode, initialTree } from '../data/initialTree';
 
 interface TodoStore {
   tree: TodoTree;

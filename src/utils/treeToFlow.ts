@@ -1,5 +1,5 @@
 import { Node, Edge } from '@xyflow/react';
-import { TodoTree } from '../types/todo';
+import { TodoTree } from '../data/initialTree';
 
 export interface TodoNodeData {
   label: string;

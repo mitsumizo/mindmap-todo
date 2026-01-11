@@ -1,5 +1,22 @@
 import { v4 as uuidv4 } from 'uuid';
-import { TodoTree, TodoNode } from '../types/todo';
+
+// 型定義
+export interface TodoNode {
+  id: string;
+  label: string;
+  completed: boolean;
+  parentId: string | null;
+  children: string[];
+  collapsed: boolean;
+  createdAt: Date;
+  completedAt?: Date;
+}
+
+export interface TodoTree {
+  nodes: Record<string, TodoNode>;
+  rootId: string;
+  version: string;
+}
 
 // IDを事前に生成
 const rootId = uuidv4();
