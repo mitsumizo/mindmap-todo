@@ -7,6 +7,11 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
   const toggleComplete = useTodoStore((state) => state.toggleComplete);
   const toggleCollapse = useTodoStore((state) => state.toggleCollapse);
   const addNode = useTodoStore((state) => state.addNode);
+  const updateNode = useTodoStore((state) => state.updateNode);
+  const deleteNode = useTodoStore((state) => state.deleteNode);
+  const tree = useTodoStore((state) => state.tree);
+
+  const isRootNode = tree.rootId === id;
 
   const handleCheckboxChange = useCallback(() => {
     toggleComplete(id);
@@ -22,6 +27,24 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
       addNode(id, newLabel.trim());
     }
   }, [id, addNode]);
+
+  const handleEdit = useCallback(() => {
+    const newLabel = prompt('タスク名を編集 ✏️', data.label);
+    if (newLabel && newLabel.trim() && newLabel.trim() !== data.label) {
+      updateNode(id, newLabel.trim());
+    }
+  }, [id, data.label, updateNode]);
+
+  const handleDelete = useCallback(() => {
+    if (isRootNode) {
+      alert('ルートノードは削除できません 🚫');
+      return;
+    }
+    const confirmed = confirm(`「${data.label}」を削除しますか？\n（子ノードも一緒に削除されます）`);
+    if (confirmed) {
+      deleteNode(id);
+    }
+  }, [id, data.label, deleteNode, isRootNode]);
 
   return (
     <div
@@ -109,6 +132,41 @@ function TodoNodeComponent({ id, data }: NodeProps<TodoNodeData>) {
         >
           + 追加
         </button>
+      </div>
+
+      {/* 編集・削除ボタン */}
+      <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-200">
+        <button
+          onClick={handleEdit}
+          className="
+            flex-1 px-2 py-1 text-xs font-semibold rounded-lg
+            bg-gradient-to-r from-blue-500 to-cyan-500
+            text-white shadow-md shadow-blue-300/50
+            transition-all duration-300 ease-out
+            hover:scale-105 hover:shadow-lg active:scale-95
+            hover:from-blue-600 hover:to-cyan-600
+          "
+          title="タスク名を編集"
+        >
+          ✏️ 編集
+        </button>
+
+        {!isRootNode && (
+          <button
+            onClick={handleDelete}
+            className="
+              flex-1 px-2 py-1 text-xs font-semibold rounded-lg
+              bg-gradient-to-r from-red-500 to-rose-500
+              text-white shadow-md shadow-red-300/50
+              transition-all duration-300 ease-out
+              hover:scale-105 hover:shadow-lg active:scale-95
+              hover:from-red-600 hover:to-rose-600
+            "
+            title="タスクを削除"
+          >
+            🗑️ 削除
+          </button>
+        )}
       </div>
 
       {/* 完了バッジ */}
