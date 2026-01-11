@@ -14,9 +14,50 @@ function TodoNodeComponent({ id, data: nodeData }: TodoNodeProps) {
   const addNode = useTodoStore((state) => state.addNode);
   const updateNode = useTodoStore((state) => state.updateNode);
   const deleteNode = useTodoStore((state) => state.deleteNode);
+  const setPriority = useTodoStore((state) => state.setPriority);
   const tree = useTodoStore((state) => state.tree);
 
   const isRootNode = tree.rootId === id;
+
+  // 優先順位に基づく色を決定
+  const getNodeColors = () => {
+    if (nodeData.completed) {
+      return {
+        bg: 'bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50',
+        border: 'border-emerald-400',
+        shadow: 'shadow-emerald-200/50',
+      };
+    }
+
+    switch (nodeData.priority) {
+      case 'high':
+        return {
+          bg: 'bg-gradient-to-br from-red-50 via-rose-50 to-pink-50',
+          border: 'border-red-400',
+          shadow: 'shadow-red-200/50',
+        };
+      case 'medium':
+        return {
+          bg: 'bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50',
+          border: 'border-yellow-400',
+          shadow: 'shadow-yellow-200/50',
+        };
+      case 'low':
+        return {
+          bg: 'bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50',
+          border: 'border-green-400',
+          shadow: 'shadow-green-200/50',
+        };
+      default:
+        return {
+          bg: 'bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30',
+          border: 'border-purple-400',
+          shadow: 'shadow-purple-200/50',
+        };
+    }
+  };
+
+  const nodeColors = getNodeColors();
 
   const handleCheckboxChange = useCallback(() => {
     toggleComplete(id);
@@ -51,16 +92,37 @@ function TodoNodeComponent({ id, data: nodeData }: TodoNodeProps) {
     }
   }, [id, nodeData.label, deleteNode, isRootNode]);
 
+  const handleSetPriority = useCallback(() => {
+    const options = '1: 🔴 高\n2: 🟡 中\n3: 🟢 低\n0: なし';
+    const choice = prompt(`優先順位を選択してください 🎯\n\n${options}`);
+
+    if (choice === null) return; // キャンセル
+
+    switch (choice.trim()) {
+      case '1':
+        setPriority(id, 'high');
+        break;
+      case '2':
+        setPriority(id, 'medium');
+        break;
+      case '3':
+        setPriority(id, 'low');
+        break;
+      case '0':
+        setPriority(id, undefined);
+        break;
+      default:
+        alert('1, 2, 3, または 0 を入力してください');
+    }
+  }, [id, setPriority]);
+
   return (
     <div
       className={`
         px-5 py-4 rounded-2xl shadow-xl border-2 min-w-[220px]
         transition-all duration-300 ease-out
         hover:scale-105 hover:shadow-2xl hover:-translate-y-1
-        ${nodeData.completed
-          ? 'bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 border-emerald-400 shadow-emerald-200/50'
-          : 'bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 border-purple-400 shadow-purple-200/50'
-        }
+        ${nodeColors.bg} ${nodeColors.border} ${nodeColors.shadow}
       `}
     >
       {/* 親ノードからの接続ハンドル */}
@@ -139,7 +201,7 @@ function TodoNodeComponent({ id, data: nodeData }: TodoNodeProps) {
         </button>
       </div>
 
-      {/* 編集・削除ボタン */}
+      {/* 編集・削除・優先度ボタン */}
       <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-200">
         <button
           onClick={handleEdit}
@@ -154,6 +216,21 @@ function TodoNodeComponent({ id, data: nodeData }: TodoNodeProps) {
           title="タスク名を編集"
         >
           ✏️ 編集
+        </button>
+
+        <button
+          onClick={handleSetPriority}
+          className="
+            flex-1 px-2 py-1 text-xs font-semibold rounded-lg
+            bg-gradient-to-r from-purple-500 to-pink-500
+            text-white shadow-md shadow-purple-300/50
+            transition-all duration-300 ease-out
+            hover:scale-105 hover:shadow-lg active:scale-95
+            hover:from-purple-600 hover:to-pink-600
+          "
+          title="優先順位を設定"
+        >
+          🎯 優先度
         </button>
 
         {!isRootNode && (
@@ -178,6 +255,23 @@ function TodoNodeComponent({ id, data: nodeData }: TodoNodeProps) {
       {nodeData.completed && (
         <div className="absolute -top-2 -right-2 bg-gradient-to-br from-emerald-400 to-teal-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-bounce">
           ✓
+        </div>
+      )}
+
+      {/* 優先順位バッジ（完了していない場合のみ） */}
+      {!nodeData.completed && nodeData.priority && (
+        <div
+          className={`
+            absolute -top-2 -left-2 text-xs font-bold px-2 py-1 rounded-full shadow-lg
+            ${nodeData.priority === 'high' ? 'bg-gradient-to-br from-red-400 to-rose-500 text-white' : ''}
+            ${nodeData.priority === 'medium' ? 'bg-gradient-to-br from-yellow-400 to-amber-500 text-white' : ''}
+            ${nodeData.priority === 'low' ? 'bg-gradient-to-br from-green-400 to-emerald-500 text-white' : ''}
+          `}
+          style={{ whiteSpace: 'nowrap' }}
+        >
+          {nodeData.priority === 'high' && '🔴 高'}
+          {nodeData.priority === 'medium' && '🟡 中'}
+          {nodeData.priority === 'low' && '🟢 低'}
         </div>
       )}
 

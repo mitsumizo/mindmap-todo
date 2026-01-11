@@ -10,6 +10,7 @@ export interface TodoNode {
   collapsed: boolean;
   createdAt: Date;
   completedAt?: Date;
+  priority?: 'high' | 'medium' | 'low';  // 優先順位（オプショナル）
 }
 
 export interface TodoTree {
@@ -52,7 +53,8 @@ const createNode = (
   id: string,
   label: string,
   parentId: string | null,
-  children: string[] = []
+  children: string[] = [],
+  priority?: 'high' | 'medium' | 'low'
 ): TodoNode => ({
   id,
   label,
@@ -61,6 +63,7 @@ const createNode = (
   children,
   collapsed: false,
   createdAt: new Date(),
+  priority,
 });
 
 export const initialTree: TodoTree = {
@@ -97,19 +100,19 @@ export const initialTree: TodoTree = {
     ]),
 
     // 転職活動の土台の子ノード
-    [linkedinId]: createNode(linkedinId, 'LinkedIn更新', foundationId),
-    [githubId]: createNode(githubId, 'GitHub整理', foundationId),
-    [portfolioId]: createNode(portfolioId, 'ポートフォリオ作成', foundationId),
-    [cvId]: createNode(cvId, 'CV整理', foundationId),
+    [linkedinId]: createNode(linkedinId, 'LinkedIn更新', foundationId, [], 'high'),
+    [githubId]: createNode(githubId, 'GitHub整理', foundationId, [], 'medium'),
+    [portfolioId]: createNode(portfolioId, 'ポートフォリオ作成', foundationId, [], 'high'),
+    [cvId]: createNode(cvId, 'CV整理', foundationId, [], 'medium'),
 
     // 面接突破の子ノード
-    [interviewPrepId]: createNode(interviewPrepId, '面接準備', interviewId),
-    [algorithmId]: createNode(algorithmId, 'アルゴリズム勉強', interviewId),
+    [interviewPrepId]: createNode(interviewPrepId, '面接準備', interviewId, [], 'high'),
+    [algorithmId]: createNode(algorithmId, 'アルゴリズム勉強', interviewId, [], 'medium'),
 
     // 英語力向上の子ノード
-    [vocabularyId]: createNode(vocabularyId, '単語力', englishId),
-    [circuitId]: createNode(circuitId, '回路の強化', englishId),
-    [ieltsId]: createNode(ieltsId, 'IELTS勉強', englishId),
+    [vocabularyId]: createNode(vocabularyId, '単語力', englishId, [], 'low'),
+    [circuitId]: createNode(circuitId, '回路の強化', englishId, [], 'medium'),
+    [ieltsId]: createNode(ieltsId, 'IELTS勉強', englishId, [], 'medium'),
 
     // 技術力向上の子ノード
     [sqlId]: createNode(sqlId, 'SQL', techId),

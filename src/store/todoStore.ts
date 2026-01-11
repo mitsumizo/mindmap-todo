@@ -11,6 +11,7 @@ interface TodoStore {
   addNode: (parentId: string, label: string) => void;
   updateNode: (nodeId: string, label: string) => void;
   deleteNode: (nodeId: string) => void;
+  setPriority: (nodeId: string, priority: 'high' | 'medium' | 'low' | undefined) => void;
   loadFromStorage: () => void;
   saveToStorage: () => void;
 }
@@ -170,6 +171,31 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
       const newTree = {
         ...state.tree,
         nodes: newNodes,
+      };
+
+      // localStorageに保存
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newTree));
+
+      return { tree: newTree };
+    });
+  },
+
+  setPriority: (nodeId: string, priority: 'high' | 'medium' | 'low' | undefined) => {
+    set((state) => {
+      const node = state.tree.nodes[nodeId];
+      if (!node) return state;
+
+      const updatedNode = {
+        ...node,
+        priority,
+      };
+
+      const newTree = {
+        ...state.tree,
+        nodes: {
+          ...state.tree.nodes,
+          [nodeId]: updatedNode,
+        },
       };
 
       // localStorageに保存

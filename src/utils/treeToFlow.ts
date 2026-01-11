@@ -6,6 +6,7 @@ export interface TodoNodeData extends Record<string, unknown> {
   completed: boolean;
   collapsed: boolean;
   hasChildren: boolean;
+  priority?: 'high' | 'medium' | 'low';
 }
 
 export function convertTreeToFlow(
@@ -28,6 +29,7 @@ export function convertTreeToFlow(
           completed: node.completed,
           collapsed: node.collapsed,
           hasChildren: node.children.length > 0,
+          priority: node.priority,
         },
         position: { x: 0, y: 0 }, // レイアウト関数で計算
       });
