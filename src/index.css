@@ -13,4 +13,54 @@ body {
 
 .react-flow__edge {
   cursor: default;
+  transition: all 0.3s ease;
+}
+
+.react-flow__edge:hover {
+  filter: brightness(1.2) !important;
+}
+
+/* カスタムアニメーション */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.react-flow__node:hover {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* スクロールバーのスタイリング */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3e8ff;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #a855f7, #ec4899);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #9333ea, #db2777);
 }
